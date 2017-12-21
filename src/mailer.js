@@ -28,3 +28,35 @@ export function sendConfirmationEmail(user) {
 
   tranpost.sendMail(email);
 }
+
+export function sendResetPasswordEmail(user) {
+  const tranpost = setup();
+  const email = {
+    from,
+    to: user.email,
+    subject: "Reset Password",
+    text: `
+      To reset password follow this link
+
+      ${user.generateResetPasswordLink()}
+    `
+  };
+
+  tranpost.sendMail(email);
+}
+
+export function sendNotifyPasswordChangeEmail(user) {
+  const tranpost = setup();
+  const email = {
+    from,
+    to: user.email,
+    subject: "Password has changed",
+    text: `
+      Your Password has change, if you did not do it, please follow the link below
+
+      ${user.generateResetPasswordLink()}
+    `
+  };
+
+  tranpost.sendMail(email);
+}
