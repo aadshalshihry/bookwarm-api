@@ -9,6 +9,7 @@ const schema = new mongoose.Schema({
   goodreadId: { type: String },
   pages: { type: Number, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  hasFinished: { type: Boolean, default: false }
 });
 
 // schema.plugin(uniqueValidator, { message: 'This email is already taken'});

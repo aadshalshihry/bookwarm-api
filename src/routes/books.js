@@ -20,6 +20,31 @@ router.post('/', (req, res) => {
   })
 });
 
+router.post('/finish', (req, res) => {
+  const book = req.body.book;
+  Book.findOne({ _id: book._id}).then(selectedBook => {
+    if(selectedBook){
+      selectedBook.hasFinished = !selectedBook.hasFinished;
+      selectedBook.save().then(newBook => {
+        res.json({ book: newBook });
+      })
+    } else {
+      res.status(400).json({});
+    }
+  })
+});
+
+router.post('/remove', (req, res) => {
+  const book = req.body.book;
+  Book.findOne({ _id: book._id}).remove((err, info) => {
+    if (err) {
+      res.status(400).json({ errors: parseErrors(err.errors) });
+    } else {
+      res.json({ book })
+    }
+  })
+});
+
 router.get("/fetchPages", (req, res) => {
   const goodreadsId = req.query.goodreadsId;
 
