@@ -13,11 +13,59 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-  Book.create({ ...req.body.book, userId: req.currentUser._id }).then(book => {
-    res.json({ book })
-  }).catch(err => {
-   res.status(400).json({ errors: parseErrors(err.errors) });
+  Book.find({ userId: req.currentUser._id }, (err, book) => {
+    if(err){
+      res.status(400).json({ errors: { global: "Something went wrong, Try again later"}});
+    }
+
+    let booksFilters = book.filter(val => {
+      return val.title === req.body.book.title;
+    })
+
+    if (booksFilters.length > 0) {
+      res.status(400).json({ errors: { global: "You already have this book in you collection"}});
+    } else {
+       Book.create({ ...req.body.book, userId: req.currentUser._id })
+         .then(book => {
+          res.json({ book })
+        }).catch(err => {
+         res.status(400).json({ errors: parseErrors(err.errors) });
+      })
+    }
+
   })
+
+  // Book.find({ title: req.body.title, userId: req.currentUser._id }, (err, book) => {
+  //   console.log("Book", book, err);
+  //   if(err){
+  //     // res.status(400).json({ errors: { global: "You already have this book in you collection"}});
+  //     res.status(400).json({ errors: { global: "Error: "}});
+  //   }
+  //   if (book.length > 0) {
+  //     res.status(400).json({ errors: { global: "You already have this book in you collection"}});
+  //   } else {
+  //      Book.create({ ...req.body.book, userId: req.currentUser._id })
+  //      .then(book => {
+  //       res.json({ book })
+  //     }).catch(err => {
+  //      res.status(400).json({ errors: parseErrors(err.errors) });
+  //     })
+  //   }
+  // })
+  //
+  // console.log("bookRoute: post('/')", req.body, req.currentUser._id);
+  // Book.findOne({title: req.body.title, userId: req.currentUser._id}).exec((err, bookFound) => {
+  //   console.log("bookRoute: post('/')", bookFound);
+    // if(bookFound){
+    //   res.status(400).json({ errors: { global: "You already have this book in you collection"}});
+    // } else {
+      // Book.create({ ...req.body.book, userId: req.currentUser._id }).then(book => {
+      //   res.json({ book })
+      // }).catch(err => {
+      //  res.status(400).json({ errors: parseErrors(err.errors) });
+      // })
+  //   }
+  // })
 });
 
 router.post('/finish', (req, res) => {
@@ -40,8 +88,12 @@ router.post('/remove', (req, res) => {
     if (err) {
       res.status(400).json({ errors: parseErrors(err.errors) });
     } else {
-      res.json({ book })
+      Book.find({ userId: book.userId}).then(books => {
+        res.json({ books })
+      })
     }
+  }).catch((err) => {
+    console.log("err", err);
   })
 });
 
