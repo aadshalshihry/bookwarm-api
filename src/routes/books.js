@@ -8,6 +8,7 @@ import Book from '../models/Book';
 const router = express.Router();
 router.use(authenticate);
 
+
 router.get('/', (req, res) => {
   Book.find({ userId: req.currentUser._id }).then(books => res.json({ books }));
 })
@@ -32,40 +33,7 @@ router.post('/', (req, res) => {
          res.status(400).json({ errors: parseErrors(err.errors) });
       })
     }
-
-  })
-
-  // Book.find({ title: req.body.title, userId: req.currentUser._id }, (err, book) => {
-  //   console.log("Book", book, err);
-  //   if(err){
-  //     // res.status(400).json({ errors: { global: "You already have this book in you collection"}});
-  //     res.status(400).json({ errors: { global: "Error: "}});
-  //   }
-  //   if (book.length > 0) {
-  //     res.status(400).json({ errors: { global: "You already have this book in you collection"}});
-  //   } else {
-  //      Book.create({ ...req.body.book, userId: req.currentUser._id })
-  //      .then(book => {
-  //       res.json({ book })
-  //     }).catch(err => {
-  //      res.status(400).json({ errors: parseErrors(err.errors) });
-  //     })
-  //   }
-  // })
-  //
-  // console.log("bookRoute: post('/')", req.body, req.currentUser._id);
-  // Book.findOne({title: req.body.title, userId: req.currentUser._id}).exec((err, bookFound) => {
-  //   console.log("bookRoute: post('/')", bookFound);
-    // if(bookFound){
-    //   res.status(400).json({ errors: { global: "You already have this book in you collection"}});
-    // } else {
-      // Book.create({ ...req.body.book, userId: req.currentUser._id }).then(book => {
-      //   res.json({ book })
-      // }).catch(err => {
-      //  res.status(400).json({ errors: parseErrors(err.errors) });
-      // })
-  //   }
-  // })
+  });
 });
 
 router.post('/finish', (req, res) => {
@@ -88,9 +56,10 @@ router.post('/remove', (req, res) => {
     if (err) {
       res.status(400).json({ errors: parseErrors(err.errors) });
     } else {
-      Book.find({ userId: book.userId}).then(books => {
-        res.json({ books })
-      })
+      res.json({ book })
+      // Book.find({ userId: book.userId}).then(books => {
+      //   res.json({ books })
+      // })
     }
   }).catch((err) => {
     console.log("err", err);
@@ -123,7 +92,8 @@ router.get("/search", (req, res) => {
             goodreadsId: work.best_book[0].id[0]._,
             title: work.best_book[0].title[0],
             authors: work.best_book[0].author[0].name[0],
-            covers: [work.best_book[0].image_url[0]]
+            covers: [work.best_book[0].image_url[0]], 
+            hasFinished: false
         }))}
       )
     )
